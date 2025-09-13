@@ -5,9 +5,10 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Copy, TrendingUp, Coins, Crown, Smartphone, Laptop, Home, Car } from "lucide-react"
+import { Copy, Coins, Bitcoin } from "lucide-react"
+import SatoshiAssets from "@/components/satoshi-assets"
+import CountUp from "react-countup"
 
 interface BTCPrice {
   usd: number
@@ -17,19 +18,19 @@ interface BTCPrice {
 interface ComparisonItem {
   name: string
   price: number
-  icon: React.ReactNode
+  image: string
   unit: string
   dynasty?: string
   years?: number
 }
 
 export default function SatoshiSimulator() {
-  const [btcPrice, setBtcPrice] = useState<BTCPrice>({ usd: 100000, usd_24h_change: 2.5 })
+  const [btcPrice, setBtcPrice] = useState<BTCPrice>({ usd: 100000, usd_24h_change: 0 })
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
 
   // 中本聪估计持有的BTC数量（约100万枚）
-  const satoshiBTC = 1000000
+  const satoshiBTC = 1100000
   const satoshiAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
 
   useEffect(() => {
@@ -58,61 +59,185 @@ export default function SatoshiSimulator() {
 
   const totalValue = satoshiBTC * btcPrice.usd
 
+  // 宇宙-地球-人类宏大时间轴配置
+  const historicalTimeline = [
+    // 宇宙时期
+    { name: "宇宙大爆炸", startYear: -13800000000, endYear: -13700000000, description: "宇宙诞生的那一刻，万物起源" },
+    { name: "原初核合成", startYear: -13700000000, endYear: -10000000000, description: "氢和氦等元素的形成期" },
+    { name: "第一代恒星", startYear: -10000000000, endYear: -5000000000, description: "宇宙中最早的恒星诞生" },
+    { name: "银河系形成", startYear: -5000000000, endYear: -4600000000, description: "我们所在的星系诞生时期" },
+
+    // 太阳系形成
+    { name: "太阳系诞生", startYear: -4600000000, endYear: -4500000000, description: "太阳和行星系统的形成" },
+    { name: "地球形成", startYear: -4500000000, endYear: -4400000000, description: "蓝色星球的诞生" },
+
+    // 地球早期历史
+    { name: "冥古宙", startYear: -4500000000, endYear: -2500000000, description: "地球最古老的地质时期" },
+    { name: "太古宙", startYear: -2500000000, endYear: -541000000, description: "大陆板块开始形成" },
+    { name: "元古宙", startYear: -541000000, endYear: -250000000, description: "复杂生命出现前的地质时期" },
+
+    // 生命起源
+    { name: "古生宙早期", startYear: -541000000, endYear: -443000000, description: "海洋生命开始出现" },
+    { name: "寒武纪大爆发", startYear: -540000000, endYear: -485000000, description: "生命多样性爆炸式增长" },
+    { name: "志留纪", startYear: -443000000, endYear: -419000000, description: "鱼类和植物登上陆地" },
+    { name: "泥盆纪", startYear: -419000000, endYear: -358000000, description: "森林和昆虫的时代" },
+
+    // 石炭纪和二叠纪
+    { name: "石炭纪", startYear: -358000000, endYear: -298000000, description: "巨大昆虫和早期爬行动物" },
+    { name: "二叠纪", startYear: -298000000, endYear: -251000000, description: "盘古大陆形成，爬行动物兴盛" },
+
+    // 中生代 - 恐龙时代
+    { name: "三叠纪", startYear: -251000000, endYear: -201000000, description: "恐龙的诞生与早期进化" },
+    { name: "侏罗纪", startYear: -201000000, endYear: -145000000, description: "恐龙的黄金时代" },
+    { name: "白垩纪", startYear: -145000000, endYear: -66000000, description: "恐龙最后的辉煌" },
+
+    // 白垩纪末期大灭绝
+    { name: "白垩纪末大灭绝", startYear: -66000000, endYear: -65000000, description: "恐龙灭绝，哺乳动物崛起" },
+
+    // 新生代 - 哺乳动物时代
+    { name: "古近纪", startYear: -66000000, endYear: -23000000, description: "早期哺乳动物和灵长类进化" },
+    { name: "新近纪", startYear: -23000000, endYear: -2580000, description: "猿类和人类祖先的进化" },
+
+    // 人类进化
+    { name: "更新世早期", startYear: -2580000, endYear: -780000, description: "早期人类和直立人出现" },
+    { name: "更新世中期", startYear: -780000, endYear: -126000, description: "尼安德特人和智人的祖先" },
+    { name: "智人时代", startYear: -300000, endYear: -10000, description: "现代人类的进化与迁徙" },
+
+    // 人类文明史
+    { name: "新石器革命", startYear: -10000, endYear: -3000, description: "农业发明，定居生活开始" },
+    { name: "苏美尔文明", startYear: -3500, endYear: -2000, description: "世界上最早的文字和城市" },
+    { name: "古埃及文明", startYear: -3100, endYear: -30, description: "金字塔与法老的时代" },
+    { name: "印度河谷文明", startYear: -3300, endYear: -1300, description: "早期城市规划的典范" },
+    { name: "华夏文明起源", startYear: -2070, endYear: -1600, description: "夏朝，中国最早的王朝" },
+
+    // 青铜时代
+    { name: "青铜时代", startYear: -3300, endYear: -1200, description: "金属工具和武器的时代" },
+    { name: "迈锡尼文明", startYear: -1600, endYear: -1100, description: "特洛伊战争的时代背景" },
+    { name: "古希腊城邦", startYear: -800, endYear: -146, description: "民主与哲学的诞生地" },
+    { name: "古罗马共和国", startYear: -509, endYear: -27, description: "共和制与扩张的时代" },
+    { name: "古罗马帝国", startYear: -27, endYear: 476, description: "帝国与法律的巅峰" },
+
+    // 中世纪
+    { name: "拜占庭帝国", startYear: 330, endYear: 1453, description: "千年帝国，东西方桥梁" },
+    { name: "阿拉伯帝国", startYear: 632, endYear: 1258, description: "伊斯兰黄金时代的辉煌" },
+    { name: "中世纪欧洲", startYear: 476, endYear: 1453, description: "骑士、城堡与十字军东征" },
+    { name: "宋朝", startYear: 960, endYear: 1279, description: "中国古代科技与文化的巅峰" },
+    { name: "蒙古帝国", startYear: 1206, endYear: 1368, description: "人类历史上最大的陆上帝国" },
+
+    // 文艺复兴与大航海
+    { name: "文艺复兴", startYear: 1300, endYear: 1600, description: "艺术、科学与人文主义的复兴" },
+    { name: "大航海时代", startYear: 1400, endYear: 1700, description: "地理大发现与殖民扩张" },
+    { name: "启蒙运动", startYear: 1685, endYear: 1815, description: "理性与科学思想的觉醒" },
+    { name: "工业革命", startYear: 1760, endYear: 1840, description: "蒸汽机与机械化生产的革命" },
+    { name: "法国大革命", startYear: 1789, endYear: 1799, description: "自由、平等、博爱的时代转折" },
+
+    // 现代历史
+    { name: "维多利亚时代", startYear: 1837, endYear: 1901, description: "大英帝国的黄金时代" },
+    { name: "第一次世界大战", startYear: 1914, endYear: 1918, description: "改变世界的毁灭性战争" },
+    { name: "大萧条时期", startYear: 1929, endYear: 1939, description: "全球经济危机与社会动荡" },
+    { name: "第二次世界大战", startYear: 1939, endYear: 1945, description: "人类历史上最惨烈的战争" },
+    { name: "冷战时期", startYear: 1947, endYear: 1991, description: "美苏两大阵营的对峙" },
+    { name: "太空竞赛", startYear: 1957, endYear: 1975, description: "人类探索太空的时代" },
+
+    // 现代科技时代
+    { name: "数字革命", startYear: 1970, endYear: 2000, description: "计算机与互联网的诞生" },
+    { name: "生物科技时代", startYear: 1990, endYear: 2020, description: "基因工程与生命科学的突破" },
+    { name: "移动互联网时代", startYear: 2007, endYear: 2020, description: "智能手机与社交网络" },
+    { name: "人工智能革命", startYear: 2010, endYear: 2040, description: "机器学习与智能系统的时代" },
+    { name: "量子计算时代", startYear: 2020, endYear: 2050, description: "量子科技与未来计算" },
+
+    // 未来展望
+    { name: "太空移民时代", startYear: 2030, endYear: 2100, description: "人类迈向星际文明的征程" },
+    { name: "后人类时代", startYear: 2100, endYear: 2200, description: "人类与AI共存的未来" },
+  ]
+
+  // 根据总年限计算对应的历史时期
+  const getHistoricalPeriod = (totalYears: number) => {
+    const startYear = getCurrentYear() - totalYears
+
+    // 如果开始年份太久远，返回最早的时期
+    if (startYear < historicalTimeline[0].startYear) {
+      return {
+        ...historicalTimeline[0],
+        actualStartYear: startYear
+      }
+    }
+
+    // 找到对应的历史时期
+    for (const period of historicalTimeline) {
+      if (startYear >= period.startYear && startYear <= period.endYear) {
+        return {
+          ...period,
+          actualStartYear: startYear
+        }
+      }
+    }
+
+    // 如果没找到匹配的，返回最后一个时期
+    return {
+      ...historicalTimeline[historicalTimeline.length - 1],
+      actualStartYear: startYear
+    }
+  }
+
   const comparisonItems: ComparisonItem[] = [
     {
       name: "iPhone 15 Pro Max",
       price: 1199,
-      icon: <Smartphone className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=200&h=200&fit=crop&crop=center",
       unit: "台",
-      dynasty: "乾隆中期",
       years: 275,
     },
     {
       name: "MacBook Pro",
       price: 2499,
-      icon: <Laptop className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop&crop=center",
       unit: "台",
-      dynasty: "顺治十二年",
       years: 370,
     },
     {
       name: "特斯拉Model S",
       price: 89990,
-      icon: <Car className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=200&h=200&fit=crop&crop=center",
       unit: "辆",
-      dynasty: "明朝崇祯",
       years: 395,
     },
     {
       name: "北京四合院",
       price: 50000000,
-      icon: <Home className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=200&h=200&fit=crop&crop=center",
       unit: "套",
-      dynasty: "唐朝贞观",
       years: 1400,
     },
     {
       name: "黄金（1盎司）",
       price: 2000,
-      icon: <Crown className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1610375461246-83df859d849d?w=200&h=200&fit=crop&crop=center",
       unit: "盎司",
-      dynasty: "康熙年间",
       years: 340,
     },
+    {
+      name: "航母（福特级）",
+      price: 13000000000, // 130亿美元
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center",
+      unit: "艘",
+      years: 50,
+    },
+    {
+      name: "大型强子对撞机",
+      price: 10000000000, // 100亿美元（欧洲核子研究中心的预算）
+      image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=200&h=200&fit=crop&crop=center",
+      unit: "座",
+      years: 30,
+    },
+    {
+      name: "SpaceX Starship",
+      price: 200000000, // 2亿美元（每次发射成本估算）
+      image: "https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=200&h=200&fit=crop&crop=center",
+      unit: "枚",
+      years: 15,
+    },
   ]
-
-  const copyAddress = () => {
-    navigator.clipboard.writeText(satoshiAddress)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  const formatNumber = (num: number) => {
-    if (num >= 1e9) return (num / 1e9).toFixed(1) + "B"
-    if (num >= 1e6) return (num / 1e6).toFixed(1) + "M"
-    if (num >= 1e3) return (num / 1e3).toFixed(1) + "K"
-    return Math.floor(num).toLocaleString()
-  }
 
   const getCurrentYear = () => new Date().getFullYear()
 
@@ -123,14 +248,14 @@ export default function SatoshiSimulator() {
         {[...Array(5)].map((_, i) => (
           <div
             key={i}
-            className="absolute text-4xl money-rain"
+            className="absolute text-4xl money-rain bg-yellow-500 rounded-full border-2 border-white p-2 shadow-muted"
             style={{
               left: `${Math.random() * 100}%`,
               animationDelay: `${Math.random() * 3}s`,
               animationDuration: `${3 + Math.random() * 2}s`,
             }}
           >
-            ₿
+            <Bitcoin className="text-white"/>
           </div>
         ))}
       </div>
@@ -139,141 +264,152 @@ export default function SatoshiSimulator() {
         {/* 标题区域 */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="text-6xl bitcoin-bounce">₿</div>
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              中本聪财富模拟器
+              中本聪模拟器
             </h1>
-            <div className="text-6xl bitcoin-bounce" style={{ animationDelay: "0.5s" }}>
-              💰
-            </div>
           </div>
-          <p className="text-xl text-muted-foreground mb-4">让你直观感受比特币创始人的惊人财富！</p>
-          <Badge variant="secondary" className="text-lg px-4 py-2">
-            实时数据 · 魔性对比 · 传播必备
-          </Badge>
+
+          <div className="flex items-center gap-2 p-4 justify-center">
+              <a href={`https://blockchain.com/btc/address/${satoshiAddress}`} target="_blank" className="text-sm font-mono break-all text-blue-500 underline">{satoshiAddress}</a>
+              <span>是比特币创世纪地址，中本聪据信持有近110万枚比特币。</span>
+            </div>
         </div>
 
-        {/* 中本聪地址卡片 */}
-        <Card className="mb-8 pulse-glow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Coins className="w-6 h-6 text-primary" />
-              中本聪的比特币地址
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
-              <code className="flex-1 text-sm font-mono break-all">{satoshiAddress}</code>
-              <Button variant="outline" size="sm" onClick={copyAddress} className="shrink-0 bg-transparent">
-                <Copy className="w-4 h-4" />
-                {copied ? "已复制!" : "复制"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <SatoshiAssets satoshiBTC={satoshiBTC} satoshiAddress={satoshiAddress} />
 
-        {/* 实时资产价值 */}
-        <Card className="mb-8 bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-2xl">
-              <TrendingUp className="w-8 h-8 text-primary" />
-              中本聪当前总资产
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">{satoshiBTC.toLocaleString()} BTC</div>
-                <div className="text-sm text-muted-foreground">持有数量</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-secondary mb-2">${formatNumber(totalValue)}</div>
-                <div className="text-sm text-muted-foreground">当前价值 (${btcPrice.usd.toLocaleString()}/BTC)</div>
-              </div>
-              <div className="text-center">
-                <div
-                  className={`text-3xl font-bold mb-2 ${btcPrice.usd_24h_change >= 0 ? "text-green-500" : "text-red-500"}`}
-                >
-                  {btcPrice.usd_24h_change >= 0 ? "+" : ""}
-                  {btcPrice.usd_24h_change.toFixed(2)}%
-                </div>
-                <div className="text-sm text-muted-foreground">24小时涨跌</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 物品对比区域 */}
+        {/* 整合对比区域 */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-center mb-8">🤯 中本聪的钱能买多少东西？</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <h2 className="text-3xl font-bold text-center mb-8 text-yellow-600">🤯 <CountUp end={satoshiBTC} duration={2.5} separator="," /> BTC = ？</h2>
+          <div className="grid grid-cols-1 gap-4">
             {comparisonItems.map((item, index) => {
               const quantity = Math.floor(totalValue / item.price)
+              const totalYearsNeeded = quantity * (item.years || 5)
+              const historicalPeriod = getHistoricalPeriod(totalYearsNeeded)
+
               return (
                 <Card
                   key={index}
-                  className="hover:shadow-lg transition-shadow duration-300 bg-gradient-to-br from-card to-muted/30"
+                  className="hover:shadow-xl hover:scale-[1.02] transition-all duration-300 bg-gradient-to-br from-card to-muted/30 border-primary/10"
                 >
                   <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-3 text-lg">
-                      <div className="p-2 bg-primary/10 rounded-lg text-primary">{item.icon}</div>
-                      {item.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center">
-                      <div className="text-4xl font-bold text-primary mb-2">{formatNumber(quantity)}</div>
-                      <div className="text-lg text-muted-foreground mb-3">{item.unit}</div>
-                      <Separator className="my-3" />
-                      <div className="text-sm text-muted-foreground">单价: ${item.price.toLocaleString()}</div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
-        </div>
+                    <div className="flex items-start gap-6">
+                      {/* 放大的商品图片 */}
+                      <div className="relative w-32 h-32 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10 p-2 shadow-lg flex-shrink-0">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover rounded-lg"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://via.placeholder.com/128x128?text=No+Image'
+                          }}
+                        />
+                      </div>
 
-        {/* 历史时间线对比 */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-center mb-8">⏰ 如果从古代开始花钱...</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {comparisonItems.slice(0, 4).map((item, index) => {
-              const quantity = Math.floor(totalValue / item.price)
-              const yearsToSpend = Math.floor((quantity * (item.years || 5)) / 365)
-              const startYear = getCurrentYear() - yearsToSpend
-
-              return (
-                <Card key={index} className="bg-gradient-to-r from-accent/5 to-primary/5 border-accent/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                      <div className="p-2 bg-accent/10 rounded-lg text-accent">{item.icon}</div>
-                      {item.name} 使用寿命计算
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">可购买数量:</span>
-                        <span className="font-bold text-primary">
-                          {formatNumber(quantity)} {item.unit}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">单个使用寿命:</span>
-                        <span className="font-bold">{item.years || 5} 年</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">总使用时间:</span>
-                        <span className="font-bold text-accent">{formatNumber(yearsToSpend)} 年</span>
-                      </div>
-                      <Separator />
-                      <div className="text-center p-4 bg-muted rounded-lg">
-                        <div className="text-lg font-bold text-accent mb-2">从 {item.dynasty || "远古时代"} 开始</div>
+                      {/* 商品信息区域 */}
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-lg mb-2">
+                          <div className="font-bold text-foreground">{item.name}</div>
+                        </CardTitle>
                         <div className="text-sm text-muted-foreground">
-                          约 {startYear > 0 ? `公元${startYear}年` : `公元前${Math.abs(startYear)}年`}
-                          {" → "}
-                          {getCurrentYear()}年 (现在)
+                          单价: ${item.price.toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* 购买数量部分 */}
+                      <div className="text-center p-3 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg">
+                        <div className="text-2xl font-bold text-primary mb-1">
+                          <CountUp end={quantity} duration={2} separator="," />
+                        </div>
+                        <div className="text-base text-muted-foreground mb-1">{item.unit}</div>
+                        <div className="text-xs text-muted-foreground">可购买数量</div>
+                      </div>
+
+                      {/* 总使用年限部分 */}
+                      <div className="text-center p-3 bg-gradient-to-br from-accent/5 to-primary/5 rounded-lg">
+                        <div className="text-2xl font-bold text-accent mb-1">
+                          <CountUp end={totalYearsNeeded} duration={2.5} separator="," />
+                        </div>
+                        <div className="text-base text-muted-foreground mb-1">年</div>
+                        <div className="text-xs text-muted-foreground">
+                          总使用年限
+                        </div>
+                        <div className="text-xs text-muted-foreground/80">
+                          单个寿命: <CountUp end={item.years || 5} duration={1} /> 年
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 时间线显示 - 宏大宇宙历史时间轴 */}
+                    <div className="mt-3 p-4 bg-gradient-to-r from-accent/10 via-primary/5 to-secondary/10 rounded-lg border border-accent/20">
+                      <div className="text-center mb-3">
+                        <div className="text-lg font-bold text-accent mb-2 flex items-center justify-center gap-2">
+                          {historicalPeriod.name.includes('宇宙') && '🌌'}
+                          {historicalPeriod.name.includes('地球') && '🌍'}
+                          {historicalPeriod.name.includes('生命') && '🧬'}
+                          {historicalPeriod.name.includes('恐龙') && '🦕'}
+                          {historicalPeriod.name.includes('人类') && '🧑'}
+                          {historicalPeriod.name.includes('文明') && '🏛️'}
+                          {historicalPeriod.name.includes('时代') && '⚡'}
+                          {historicalPeriod.name.includes('革命') && '🔥'}
+                          {historicalPeriod.name.includes('大战') && '⚔️'}
+                          {!historicalPeriod.name.includes('宇宙') &&
+                           !historicalPeriod.name.includes('地球') &&
+                           !historicalPeriod.name.includes('生命') &&
+                           !historicalPeriod.name.includes('恐龙') &&
+                           !historicalPeriod.name.includes('人类') &&
+                           !historicalPeriod.name.includes('文明') &&
+                           !historicalPeriod.name.includes('时代') &&
+                           !historicalPeriod.name.includes('革命') &&
+                           !historicalPeriod.name.includes('大战') && '⏳'}
+                          {historicalPeriod.name}
+                        </div>
+                        <div className="text-sm text-muted-foreground font-medium">
+                          {historicalPeriod.description}
+                        </div>
+                      </div>
+
+                      <div className="bg-gradient-to-r from-muted/30 to-muted/10 rounded-lg p-3 mb-3">
+                        <div className="flex items-center justify-center gap-3 text-sm mb-2">
+                          <div className="text-center">
+                            <div className="font-medium text-accent">起始时间</div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {historicalPeriod.actualStartYear > 0
+                                ? `公元${historicalPeriod.actualStartYear}年`
+                                : historicalPeriod.actualStartYear < -1000000
+                                  ? `${Math.abs(Math.floor(historicalPeriod.actualStartYear / 1000000000))}0亿年前`
+                                  : historicalPeriod.actualStartYear < -1000
+                                    ? `${Math.abs(Math.floor(historicalPeriod.actualStartYear / 1000000))}百万年前`
+                                    : `公元前${Math.abs(historicalPeriod.actualStartYear)}年`
+                              }
+                            </div>
+                          </div>
+                          <div className="text-muted-foreground">→</div>
+                          <div className="text-center">
+                            <div className="font-medium text-primary">现在</div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              公元{new Date().getFullYear()}年
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-center">
+                        <div className="text-sm text-muted-foreground mb-1">
+                          🚀 这段旅程跨越了
+                        </div>
+                        <div className="text-xl font-bold text-accent">
+                          <CountUp end={totalYearsNeeded} duration={3} separator="," />
+                          <span className="text-sm font-normal ml-1">年</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground/80 mt-2">
+                          {totalYearsNeeded > 1000000000 ? '🌌 宇宙尺度' :
+                           totalYearsNeeded > 1000000 ? '🌍 地质尺度' :
+                           totalYearsNeeded > 100000 ? '🧬 进化尺度' :
+                           totalYearsNeeded > 10000 ? '🧑 人类尺度' :
+                           totalYearsNeeded > 1000 ? '🏛️ 文明尺度' : '⚡ 现代尺度'}
                         </div>
                       </div>
                     </div>
@@ -284,45 +420,11 @@ export default function SatoshiSimulator() {
           </div>
         </div>
 
-        {/* 搞笑总结 */}
-        <Card className="bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 border-primary/30">
-          <CardContent className="text-center py-8">
-            <div className="text-6xl mb-4">🤑</div>
-            <h3 className="text-2xl font-bold mb-4">总结：中本聪真的是...</h3>
-            <div className="text-xl text-muted-foreground mb-6 space-y-2">
-              <p>
-                💰 拥有价值 <span className="font-bold text-primary">${formatNumber(totalValue)}</span> 的比特币
-              </p>
-              <p>🏰 可以买下整个朝代的GDP</p>
-              <p>👑 比古代皇帝还要富有</p>
-              <p>🚀 财富增长速度超越火箭</p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button
-                size="lg"
-                className="bg-primary hover:bg-primary/90"
-                onClick={() =>
-                  window.open(
-                    "https://twitter.com/intent/tweet?text=" +
-                      encodeURIComponent(
-                        `🤯 中本聪现在的财富价值 $${formatNumber(totalValue)}！可以买 ${formatNumber(Math.floor(totalValue / 1199))} 台iPhone！从古代花到现在都花不完！#比特币 #中本聪 #财富模拟器`,
-                      ),
-                    "_blank",
-                  )
-                }
-              >
-                分享到推特 🐦
-              </Button>
-              <Button variant="outline" size="lg" onClick={() => window.location.reload()}>
-                刷新数据 🔄
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+       
 
         {/* 页脚 */}
         <div className="text-center mt-12 text-sm text-muted-foreground">
-          <p>数据来源: CoinGecko API | 中本聪BTC数量为估算值</p>
+          <p>数据来源: CoinGecko API</p>
           <p className="mt-2">⚠️ 本工具仅供娱乐，不构成投资建议</p>
         </div>
       </div>
