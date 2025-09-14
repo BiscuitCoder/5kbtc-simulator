@@ -7,7 +7,7 @@ import { Suspense } from "react"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "中本聪财富模拟器 - 比特币创始人资产实时计算器",
+  title: "中本聪模拟器 - 比特币创始人资产模拟器",
   description: "实时计算中本聪的比特币财富，换算成各种物品数量和历史时间线。幽默魔性，传播必备！",
   generator: "v0.app",
   keywords: ["中本聪", "比特币", "财富计算器", "BTC", "资产模拟器"],
@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     title: "中本聪财富模拟器",
     description: "看看比特币创始人的惊人财富能买多少东西！",
     type: "website",
+  },
+  icons: {
+    icon: "/favicon.ico",
   },
   twitter: {
     card: "summary_large_image",
