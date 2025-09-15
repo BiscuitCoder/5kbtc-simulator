@@ -22,7 +22,7 @@ interface SatoshiAssetsProps {
 export default function SatoshiAssets({
   satoshiBTC,
   satoshiAddress,
-  cnyAmount = 5000,
+  cnyAmount = 6000,
   selectedYear = 2021,
   purchasePrice = 47886.69,
   currentValue = 0
@@ -312,7 +312,7 @@ export default function SatoshiAssets({
             }`}>
               ${Number((currentValue - (cnyAmount / 6.5)).toFixed(0)).toLocaleString()}
             </div>
-            <div className="text-xs text-muted-foreground">错失资产</div>
+            <div className="text-xs text-muted-foreground">增值资产</div>
           </div>
         </div>
 

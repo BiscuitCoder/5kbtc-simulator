@@ -103,8 +103,8 @@ export default function KBTCSimulator() {
     getItemSubtotal
   } = useCartStore()
 
-  // 5KBTC 概念：5千人民币在不同年份购买BTC
-  const cnyAmount = 5000 // 5千人民币
+  // 5KBTC 概念：6千人民币在不同年份购买BTC
+  const cnyAmount = 6000 // 6千人民币
   const exchangeRate = 6.5 // 人民币兑美元汇率
 
   // 将人民币价格转换为美元价格
@@ -116,7 +116,7 @@ export default function KBTCSimulator() {
     return priceData ? priceData.price : btcPrice.usd
   }
 
-  // 计算在指定年份用5千人民币能买多少BTC
+  // 计算在指定年份用6千人民币能买多少BTC
   const userBTC = priceHistoryData.length > 0 ? (cnyAmount / exchangeRate) / getBTCPriceByYear(selectedYear || priceHistoryData[0]?.year || 2014) : 0
   const currentValue = userBTC * btcPrice.usd
 
