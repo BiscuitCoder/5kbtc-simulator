@@ -214,7 +214,7 @@ export default function KBTCSimulator() {
       unit: "架"
     }, {
       name: "三年高考两年模拟",
-      price: convertToUSD(2188),
+      price: convertToUSD(108),
       image: "/goods/10.png",
       unit: "本"
     },
