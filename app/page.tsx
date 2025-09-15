@@ -53,7 +53,43 @@ export default function KBTCSimulator() {
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [showPurchaseDialog, setShowPurchaseDialog] = useState(false)
-  const [selectedYear, setSelectedYear] = useState<number>(2021) // 默认选择2021年
+  const [selectedYear, setSelectedYear] = useState<number | null>(null)
+  const [defaultYear, setDefaultYear] = useState<number>(2014)
+  const [priceHistoryData, setPriceHistoryData] = useState<any[]>([])
+
+  // 从 localStorage 读取保存的年份
+  useEffect(() => {
+    const savedYear = localStorage.getItem('satoshi-simulator-selected-year')
+    if (savedYear) {
+      const year = parseInt(savedYear)
+      if (!isNaN(year)) {
+        setSelectedYear(year)
+      }
+    }
+  }, [])
+
+  // 当价格数据加载时，设置默认年份
+  const handlePriceDataChange = (data: any[]) => {
+    setPriceHistoryData(data)
+    if (data.length > 0 && !selectedYear) {
+      // 如果没有保存的年份，则使用第一个年份作为默认
+      const firstYear = data[0].year
+      setDefaultYear(firstYear)
+      if (!localStorage.getItem('satoshi-simulator-selected-year')) {
+        setSelectedYear(firstYear)
+      }
+    }
+  }
+
+  // 年份选择处理函数，包含本地存储
+  const handleYearChange = (year: number | null) => {
+    setSelectedYear(year)
+    if (year) {
+      localStorage.setItem('satoshi-simulator-selected-year', year.toString())
+    } else {
+      localStorage.removeItem('satoshi-simulator-selected-year')
+    }
+  }
 
   // 使用zustand store
   const {
@@ -71,32 +107,17 @@ export default function KBTCSimulator() {
   const cnyAmount = 5000 // 5千人民币
   const exchangeRate = 6.5 // 人民币兑美元汇率
 
-  // 获取对应年份的BTC价格
+  // 将人民币价格转换为美元价格
+  const convertToUSD = (cnyPrice: number) => Math.round((cnyPrice / exchangeRate) * 100) / 100
+
+  // 获取对应年份的BTC价格（使用图表组件的数据）
   const getBTCPriceByYear = (year: number): number => {
-    const historicalPrices: { [key: number]: number } = {
-      2009: 0.001,
-      2010: 0.06,
-      2011: 4.89,
-      2012: 8.26,
-      2013: 259.99,
-      2014: 526.23,
-      2015: 272.02,
-      2016: 568.49,
-      2017: 3266.45,
-      2018: 7427.82,
-      2019: 7320.57,
-      2020: 11015.66,
-      2021: 47886.69,
-      2022: 19421.05,
-      2023: 29890.23,
-      2024: 63204.98,
-      2025: 95000.00,
-    }
-    return historicalPrices[year] || btcPrice.usd
+    const priceData = priceHistoryData.find(item => item.year === year)
+    return priceData ? priceData.price : btcPrice.usd
   }
 
   // 计算在指定年份用5千人民币能买多少BTC
-  const userBTC = (cnyAmount / exchangeRate) / getBTCPriceByYear(selectedYear)
+  const userBTC = priceHistoryData.length > 0 ? (cnyAmount / exchangeRate) / getBTCPriceByYear(selectedYear || priceHistoryData[0]?.year || 2014) : 0
   const currentValue = userBTC * btcPrice.usd
 
   useEffect(() => {
@@ -138,204 +159,101 @@ export default function KBTCSimulator() {
   const totalValue = currentValue
 
   const comparisonItems: ComparisonItem[] = [
-    // 低价商品 (几美元到几百美元)
     {
-      name: "星巴克咖啡",
-      price: 5,
-      image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=200&h=200&fit=crop&crop=center",
-      unit: "杯",
-      years: 5,
+      name: "西贝老罗套餐（热门推荐）",
+      price: convertToUSD(785),
+      image: "/goods/14.png",
+      unit: "顿"
     },
     {
-      name: "iPhone充电线",
-      price: 25,
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center",
-      unit: "根",
-      years: 2,
+      name: "亲嘴烧零食大礼包",
+      price: convertToUSD(13.9),
+      image: "/goods/1.png",
+      unit: "包",
     },
     {
-      name: "耐克运动鞋",
-      price: 120,
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop&crop=center",
-      unit: "双",
-      years: 3,
+      name: "iPhone 17 Pro",
+      price: convertToUSD(8999),
+      image: "/goods/3.png",
+      unit: "台"
     },
     {
-      name: "Switch游戏机",
-      price: 299,
-      image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=200&h=200&fit=crop&crop=center",
+      name: "隆江猪脚饭",
+      price: convertToUSD(23),
+      image: "/goods/2.png",
+      unit: "袋"
+    },
+    {
+      name: "任天堂Switch",
+      price: convertToUSD(2438),
+      image: "/goods/5.png",
       unit: "台",
-      years: 8,
     },
-
-    // 中价商品 (几百到几千美元)
     {
-      name: "iPhone 15 Pro Max",
-      price: 1199,
-      image: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=200&h=200&fit=crop&crop=center",
+      name: "北京二锅头",
+      price: convertToUSD(32.90),
+      image: "/goods/7.png",
+      unit: "瓶"
+    },
+    {
+      name: "PS5 游戏机",
+      price: convertToUSD(2038),
+      image: "/goods/8.png",
       unit: "台",
-      years: 3,
     },
     {
-      name: "PS5游戏机",
-      price: 499,
-      image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=200&h=200&fit=crop&crop=center",
+      name: "MacBookPro16英寸M4Pro",
+      price: convertToUSD(19999),
+      image: "/goods/9.png",
       unit: "台",
-      years: 8,
     },
     {
-      name: "MacBook Pro",
-      price: 2499,
-      image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop&crop=center",
-      unit: "台",
-      years: 5,
+      name: "大疆Mini 3",
+      price: convertToUSD(2188),
+      image: "/goods/4.png",
+      unit: "架"
+    }, {
+      name: "三年高考两年模拟",
+      price: convertToUSD(2188),
+      image: "/goods/10.png",
+      unit: "本"
     },
     {
-      name: "DJI无人机",
-      price: 1299,
-      image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=200&h=200&fit=crop&crop=center",
-      unit: "架",
-      years: 3,
-    },
-
-    // 高价商品 (几万到几十万美元)
-    {
-      name: "特斯拉Model 3",
-      price: 35000,
-      image: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=200&h=200&fit=crop&crop=center",
+      name: "特斯拉Model X",
+      price: convertToUSD(720000),
+      image: "/goods/11.png",
       unit: "辆",
-      years: 10,
     },
     {
-      name: "特斯拉Model S",
-      price: 89990,
-      image: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=200&h=200&fit=crop&crop=center",
-      unit: "辆",
-      years: 8,
+      name: "一斤猪肉",
+      price: convertToUSD(16),
+      image: "/goods/12.png",
+      unit: "斤"
     },
     {
-      name: "私人飞机",
-      price: 2000000, // 200万美元
-      image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=200&h=200&fit=crop&crop=center",
-      unit: "架",
-      years: 30,
+      name: "大瓶装冰红茶",
+      price: convertToUSD(4.5),
+      image: "/goods/13.png",
+      unit: "件"
     },
     {
-      name: "豪华游艇",
-      price: 5000000, // 500万美元
-      image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=200&h=200&fit=crop&crop=center",
-      unit: "艘",
-      years: 50,
-    },
-
-    // 新增商品 - 从lemonjing.com/rich提取的商品
-    {
-      name: "路易威登手袋",
-      price: 5000,
-      image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200&h=200&fit=crop&crop=center",
-      unit: "个",
-      years: 15,
+      name: "网易云会员",
+      price: convertToUSD(15),
+      image: "/goods/15.png",
+      unit: "月"
     },
     {
-      name: "劳力士手表",
-      price: 15000,
-      image: "https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=200&h=200&fit=crop&crop=center",
-      unit: "块",
-      years: 20,
+      name: "宏光MINIEV",
+      price: convertToUSD(30000),
+      image: "/goods/16.png",
+      unit: "辆"
     },
     {
-      name: "法拉利跑车",
-      price: 300000,
-      image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=200&h=200&fit=crop&crop=center",
-      unit: "辆",
-      years: 25,
-    },
-    {
-      name: "私人岛屿",
-      price: 10000000,
-      image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&h=200&fit=crop&crop=center",
-      unit: "个",
-      years: 50,
-    },
-    {
-      name: "古驰包包",
-      price: 2500,
-      image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=200&h=200&fit=crop&crop=center",
-      unit: "个",
-      years: 12,
-    },
-    {
-      name: "香奈儿香水",
-      price: 300,
-      image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=200&h=200&fit=crop&crop=center",
-      unit: "瓶",
-      years: 5,
-    },
-    {
-      name: "普拉达鞋子",
-      price: 800,
-      image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop&crop=center",
-      unit: "双",
-      years: 8,
-    },
-    {
-      name: "范思哲太阳镜",
-      price: 400,
-      image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=200&h=200&fit=crop&crop=center",
-      unit: "副",
-      years: 6,
-    },
-
-    // 超高价商品 (几百万到几十亿美元)
-    {
-      name: "比佛利山庄豪宅",
-      price: 15000000, // 1500万美元
-      image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=200&h=200&fit=crop&crop=center",
-      unit: "栋",
-      years: 100,
-    },
-    {
-      name: "北京四合院",
-      price: 50000000, // 5000万美元
-      image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=200&h=200&fit=crop&crop=center",
-      unit: "套",
-      years: 200,
-    },
-    {
-      name: "SpaceX Starship",
-      price: 200000000, // 2亿美元
-      image: "https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=200&h=200&fit=crop&crop=center",
-      unit: "枚",
-      years: 50,
-    },
-    {
-      name: "波音747客机",
-      price: 300000000, // 3亿美元
-      image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=200&h=200&fit=crop&crop=center",
-      unit: "架",
-      years: 40,
-    },
-    {
-      name: "大型强子对撞机",
-      price: 10000000000, // 100亿美元
-      image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=200&h=200&fit=crop&crop=center",
-      unit: "座",
-      years: 30,
-    },
-    {
-      name: "航母（福特级）",
-      price: 13000000000, // 130亿美元
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center",
-      unit: "艘",
-      years: 50,
-    },
-    {
-      name: "国际空间站",
-      price: 150000000000, // 1500亿美元
-      image: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=200&h=200&fit=crop&crop=center",
-      unit: "座",
-      years: 30,
-    },
+      name: "Claude 订阅",
+      price: convertToUSD(130),
+      image: "/goods/17.png",
+      unit: "月"
+    }
   ]
 
   // 使用store中的计算方法
@@ -352,18 +270,22 @@ export default function KBTCSimulator() {
       <div className="container mx-auto px-4 py-8 relative z-10">
 
         <HeaderSection
-          satoshiAddress={`5KBTC-${selectedYear}`}
+          satoshiAddress="5KBTC"
         />
 
 
-       <BitcoinPriceHistory className="mb-8" selectedYear={selectedYear} onYearChange={setSelectedYear} />
+       <BitcoinPriceHistory
+         className="mb-8"
+         selectedYear={selectedYear}
+         onYearChange={handleYearChange}
+         onPriceDataChange={handlePriceDataChange}
+         defaultYear={defaultYear}
+       />
 
         <SatoshiAssets
           satoshiBTC={userBTC}
-          satoshiAddress={`5KBTC-${selectedYear}`}
+          satoshiAddress="5KBTC"
           cnyAmount={cnyAmount}
-          selectedYear={selectedYear}
-          purchasePrice={getBTCPriceByYear(selectedYear)}
           currentValue={currentValue}
         />
 

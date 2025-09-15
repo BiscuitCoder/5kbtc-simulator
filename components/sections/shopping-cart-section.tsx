@@ -30,7 +30,7 @@ export default function ShoppingCartSection({ comparisonItems, remainingAssets }
 
   return (
     <div className="mb-8">
-      <h2 className="text-3xl font-bold text-center mb-4 text-yellow-600">🛒 或者，你可以尝试购买点什么？</h2>
+      <h2 className="text-3xl font-bold text-center mb-4 text-yellow-600">🛒 请理性消费！</h2>
       <p className="text-center text-muted-foreground mb-8">
         选择商品数量，实时计算价格！
       </p>
@@ -54,7 +54,7 @@ export default function ShoppingCartSection({ comparisonItems, remainingAssets }
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-full h-full object-cover rounded-lg"
+                        className="w-full h-full object-cover rounded-xl bg-white"
                         onError={(e) => {
                           e.currentTarget.src = 'https://via.placeholder.com/128x128?text=No+Image'
                         }}
@@ -69,8 +69,8 @@ export default function ShoppingCartSection({ comparisonItems, remainingAssets }
                       <div className="text-sm text-muted-foreground">
                         单价: ${item.price.toLocaleString()}
                       </div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        可购买: {quantity} {item.unit}
+                      <div className="text-sm mt-1 text-green-600">
+                        可购买: {quantity.toLocaleString()} {item.unit}
                       </div>
                     </div>
                   </div>
@@ -89,8 +89,8 @@ export default function ShoppingCartSection({ comparisonItems, remainingAssets }
                           </div>
                         ) : <span>$0.00</span>}
                       </div>
-                      <div className="text-sm text-green-600 font-bold">
-                        当前: {getItemQuantity(index)} {item.unit}
+                      <div className={`text-sm  font-bold ${getItemQuantity(index) > 0 ? 'text-red-400' : 'text-gray-400'} `}>
+                        已选: {getItemQuantity(index)} {item.unit}
                       </div>
                     </div>
                     <div className="flex items-center justify-center gap-3">

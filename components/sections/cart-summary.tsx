@@ -25,13 +25,13 @@ export default function CartSummary({
           <div className="flex items-start gap-20">
             <div className="text-left w-[200px]">
               <div className="text-xl font-bold text-accent mb-1">
-                <CountUp end={cartTotal} duration={2} separator="," prefix="$" />
+                <CountUp end={cartTotal} duration={2} separator="," prefix="$" decimals={2} />
               </div>
               <div className="text-xs text-muted-foreground">购物车总计</div>
             </div>
             <div className="text-left w-[400px]">
               <div className={`text-xl font-bold mb-1 ${remainingAssets >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                <CountUp end={remainingAssets} duration={2} separator="," prefix="$" />
+                <CountUp end={remainingAssets} duration={2} separator="," prefix="$" decimals={2} />
               </div>
               <div className="flex items-center space-x-2">
                 <div className="text-xs text-muted-foreground">剩余资产</div>
