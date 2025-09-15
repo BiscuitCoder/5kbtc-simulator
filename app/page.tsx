@@ -10,6 +10,7 @@ import ShoppingCartSection from "@/components/sections/shopping-cart-section"
 import CartSummary from "@/components/sections/cart-summary"
 import FooterSection from "@/components/sections/footer-section"
 import PurchaseDialog from "@/components/sections/purchase-dialog"
+import BitcoinPriceHistory from "@/components/sections/btc-price-history"
 import { useCartStore } from "@/lib/store"
 
 interface BTCPrice {
@@ -47,11 +48,12 @@ function FloatingBitcoin() {
   )
 }
 
-export default function SatoshiSimulator() {
+export default function KBTCSimulator() {
   const [btcPrice, setBtcPrice] = useState<BTCPrice>({ usd: 100000, usd_24h_change: 0 })
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [showPurchaseDialog, setShowPurchaseDialog] = useState(false)
+  const [selectedYear, setSelectedYear] = useState<number>(2021) // 默认选择2021年
 
   // 使用zustand store
   const {
@@ -65,9 +67,37 @@ export default function SatoshiSimulator() {
     getItemSubtotal
   } = useCartStore()
 
-  // 中本聪估计持有的BTC数量（约100万枚）
-  const satoshiBTC = 1100000
-  const satoshiAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+  // 5KBTC 概念：5千人民币在不同年份购买BTC
+  const cnyAmount = 5000 // 5千人民币
+  const exchangeRate = 6.5 // 人民币兑美元汇率
+
+  // 获取对应年份的BTC价格
+  const getBTCPriceByYear = (year: number): number => {
+    const historicalPrices: { [key: number]: number } = {
+      2009: 0.001,
+      2010: 0.06,
+      2011: 4.89,
+      2012: 8.26,
+      2013: 259.99,
+      2014: 526.23,
+      2015: 272.02,
+      2016: 568.49,
+      2017: 3266.45,
+      2018: 7427.82,
+      2019: 7320.57,
+      2020: 11015.66,
+      2021: 47886.69,
+      2022: 19421.05,
+      2023: 29890.23,
+      2024: 63204.98,
+      2025: 95000.00,
+    }
+    return historicalPrices[year] || btcPrice.usd
+  }
+
+  // 计算在指定年份用5千人民币能买多少BTC
+  const userBTC = (cnyAmount / exchangeRate) / getBTCPriceByYear(selectedYear)
+  const currentValue = userBTC * btcPrice.usd
 
   useEffect(() => {
     const fetchBTCPrice = async () => {
@@ -104,7 +134,8 @@ export default function SatoshiSimulator() {
     return () => clearInterval(interval)
   }, [])
 
-  const totalValue = satoshiBTC * btcPrice.usd
+  // 保持向后兼容性，totalValue 现在表示用户当前资产价值
+  const totalValue = currentValue
 
   const comparisonItems: ComparisonItem[] = [
     // 低价商品 (几美元到几百美元)
@@ -197,6 +228,64 @@ export default function SatoshiSimulator() {
       years: 50,
     },
 
+    // 新增商品 - 从lemonjing.com/rich提取的商品
+    {
+      name: "路易威登手袋",
+      price: 5000,
+      image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200&h=200&fit=crop&crop=center",
+      unit: "个",
+      years: 15,
+    },
+    {
+      name: "劳力士手表",
+      price: 15000,
+      image: "https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=200&h=200&fit=crop&crop=center",
+      unit: "块",
+      years: 20,
+    },
+    {
+      name: "法拉利跑车",
+      price: 300000,
+      image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=200&h=200&fit=crop&crop=center",
+      unit: "辆",
+      years: 25,
+    },
+    {
+      name: "私人岛屿",
+      price: 10000000,
+      image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&h=200&fit=crop&crop=center",
+      unit: "个",
+      years: 50,
+    },
+    {
+      name: "古驰包包",
+      price: 2500,
+      image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=200&h=200&fit=crop&crop=center",
+      unit: "个",
+      years: 12,
+    },
+    {
+      name: "香奈儿香水",
+      price: 300,
+      image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=200&h=200&fit=crop&crop=center",
+      unit: "瓶",
+      years: 5,
+    },
+    {
+      name: "普拉达鞋子",
+      price: 800,
+      image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop&crop=center",
+      unit: "双",
+      years: 8,
+    },
+    {
+      name: "范思哲太阳镜",
+      price: 400,
+      image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=200&h=200&fit=crop&crop=center",
+      unit: "副",
+      years: 6,
+    },
+
     // 超高价商品 (几百万到几十亿美元)
     {
       name: "比佛利山庄豪宅",
@@ -256,12 +345,28 @@ export default function SatoshiSimulator() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-secondary/20">
+      
       <FloatingBitcoin />
+      
 
       <div className="container mx-auto px-4 py-8 relative z-10">
-        <HeaderSection satoshiAddress={satoshiAddress} />
 
-        <SatoshiAssets satoshiBTC={satoshiBTC} satoshiAddress={satoshiAddress} />
+        <HeaderSection
+          satoshiAddress={`5KBTC-${selectedYear}`}
+        />
+
+
+       <BitcoinPriceHistory className="mb-8" selectedYear={selectedYear} onYearChange={setSelectedYear} />
+
+        <SatoshiAssets
+          satoshiBTC={userBTC}
+          satoshiAddress={`5KBTC-${selectedYear}`}
+          cnyAmount={cnyAmount}
+          selectedYear={selectedYear}
+          purchasePrice={getBTCPriceByYear(selectedYear)}
+          currentValue={currentValue}
+        />
+
 
         <ShoppingCartSection comparisonItems={comparisonItems} remainingAssets={remainingAssets} />
 

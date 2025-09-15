@@ -50,7 +50,7 @@ export default function ShoppingCartSection({ comparisonItems, remainingAssets }
                 <CardHeader className="pb-3">
                   <div className="flex items-start gap-6">
                     {/* 放大的商品图片 */}
-                    <div className="relative w-32 h-32 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10 p-2 shadow-lg flex-shrink-0">
+                    <div className="relative w-32 h-32 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10 shadow-lg flex-shrink-0">
                       <img
                         src={item.image}
                         alt={item.name}
@@ -68,6 +68,9 @@ export default function ShoppingCartSection({ comparisonItems, remainingAssets }
                       </CardTitle>
                       <div className="text-sm text-muted-foreground">
                         单价: ${item.price.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        可购买: {quantity} {item.unit}
                       </div>
                     </div>
                   </div>
@@ -136,16 +139,6 @@ export default function ShoppingCartSection({ comparisonItems, remainingAssets }
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
-                  </div>
-
-                  {/* 购买数量显示 */}
-                  <div className="text-center p-4 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg">
-                    <div className="text-3xl font-bold text-primary mb-2 flex items-center justify-center gap-2">
-                      <CountUp end={quantity} duration={2} separator="," />
-                      <div className="text-lg text-muted-foreground mb-1">{item.unit}</div>
-                    </div>
-                    
-                    <div className="text-sm text-muted-foreground">可购买数量</div>
                   </div>
                 </CardContent>
               </Card>

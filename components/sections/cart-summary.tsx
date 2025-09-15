@@ -20,29 +20,25 @@ export default function CartSummary({
   return (
     <>
       {/* 常驻购物车摘要 - 固定在底部 */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-primary/20 shadow-lg z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="text-xl font-bold text-primary mb-1">
-                <CountUp end={totalValue} duration={2} separator="," prefix="$" />
-              </div>
-              <div className="text-xs text-muted-foreground">总资产价值</div>
-            </div>
-            <div className="text-center">
+      {cartTotal !== 0 && <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-primary/20 shadow-lg z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-start gap-20">
+            <div className="text-left w-[200px]">
               <div className="text-xl font-bold text-accent mb-1">
                 <CountUp end={cartTotal} duration={2} separator="," prefix="$" />
               </div>
               <div className="text-xs text-muted-foreground">购物车总计</div>
             </div>
-            <div className="text-center">
+            <div className="text-left w-[400px]">
               <div className={`text-xl font-bold mb-1 ${remainingAssets >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 <CountUp end={remainingAssets} duration={2} separator="," prefix="$" />
               </div>
-              <div className="text-xs text-muted-foreground">剩余资产</div>
-              {remainingAssets < 0 && (
-                <div className="text-xs text-red-500 mt-1">⚠️ 这都能破产，你到底想要干啥？</div>
-              )}
+              <div className="flex items-center space-x-2">
+                <div className="text-xs text-muted-foreground">剩余资产</div>
+                {remainingAssets < 0 && (
+                  <div className="text-xs text-red-500">⚠️ 请控制住自己的欲望！</div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -68,10 +64,10 @@ export default function CartSummary({
             )}
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* 为固定底部购物车预留空间 */}
-      <div className="h-32"></div>
+      <div className="h-20"></div>
     </>
   )
 }

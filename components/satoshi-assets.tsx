@@ -13,9 +13,20 @@ interface BTCPrice {
 interface SatoshiAssetsProps {
   satoshiBTC: number
   satoshiAddress: string
+  cnyAmount?: number
+  selectedYear?: number
+  purchasePrice?: number
+  currentValue?: number
 }
 
-export default function SatoshiAssets({ satoshiBTC, satoshiAddress }: SatoshiAssetsProps) {
+export default function SatoshiAssets({
+  satoshiBTC,
+  satoshiAddress,
+  cnyAmount = 5000,
+  selectedYear = 2021,
+  purchasePrice = 47886.69,
+  currentValue = 0
+}: SatoshiAssetsProps) {
   const [btcPrice, setBtcPrice] = useState<BTCPrice>({ usd: 100000, usd_24h_change: 0 })
   const [loading, setLoading] = useState(true)
 
@@ -263,94 +274,48 @@ export default function SatoshiAssets({ satoshiBTC, satoshiAddress }: SatoshiAss
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-2xl">
           <TrendingUp className="w-8 h-8 text-primary" />
-          中本聪当前总资产
+          资产估算
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">
-              <CountUp end={satoshiBTC} duration={2.5} separator="," />
-              <span className="ml-1">BTC</span>
+            <div className="text-2xl font-bold text-orange-600 mb-2">
+              ¥{cnyAmount.toLocaleString()}
             </div>
-            <div className="text-sm text-muted-foreground">持有数量</div>
+            <div className="text-xs text-muted-foreground">{selectedYear}年投入金额</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-blue-500 mb-2">
-              $<CountUp end={btcPrice.usd} duration={2} separator="," decimals={0} />
+            <div className="text-2xl font-bold text-blue-500 mb-2">
+              $<CountUp end={purchasePrice} duration={2} separator="," decimals={0} />
             </div>
-            <div className="text-sm text-muted-foreground">BTC 当前价格</div>
+            <div className="text-xs text-muted-foreground">{selectedYear}年BTC价格</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-secondary mb-2">
-              $<CountUp end={totalValue} duration={3} separator="," decimals={0} />
+            <div className="text-2xl font-bold text-green-600 mb-2">
+              <CountUp end={satoshiBTC} duration={2.5} separator="," decimals={4} />
+              <span className="ml-1 text-sm">BTC</span>
             </div>
-            <div className="text-sm text-muted-foreground">总资产价值</div>
+            <div className="text-xs text-muted-foreground">获得的BTC数量</div>
           </div>
           <div className="text-center">
-            <div
-              className={`text-3xl font-bold mb-2 ${btcPrice.usd_24h_change >= 0 ? "text-green-500" : "text-red-500"}`}
-            >
-              {btcPrice.usd_24h_change >= 0 ? "+" : ""}
-              <CountUp end={btcPrice.usd_24h_change} duration={1.5} decimals={2} />%
+            <div className="text-2xl font-bold text-purple-600 mb-2">
+              $<CountUp end={currentValue} duration={3} separator="," decimals={0} />
             </div>
-            <div className="text-sm text-muted-foreground">24小时涨跌</div>
+            <div className="text-xs text-muted-foreground">当前价值美元</div>
+          </div>
+          <div className="text-center">
+            <div className={`text-2xl font-bold mb-2 ${
+              (currentValue - (cnyAmount / 6.5)) >= 0
+                ? 'text-green-600'
+                : 'text-red-600'
+            }`}>
+              ${Number((currentValue - (cnyAmount / 6.5)).toFixed(0)).toLocaleString()}
+            </div>
+            <div className="text-xs text-muted-foreground">错失资产</div>
           </div>
         </div>
 
-        {/* 资产换算区域 */}
-        <div className="mt-8 pt-6 border-t border-primary/10">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {conversionItems.map((item) => (
-              <div
-                key={item.id}
-                className={`bg-gradient-to-br ${item.gradient} p-4 rounded-lg border ${item.border}`}
-              >
-                <div className="text-center">
-                  <div className={`text-2xl font-bold ${item.textColor} mb-2`}>
-                    {item.icon} {item.title}
-                  </div>
-                  <div className={`text-lg font-semibold ${item.textColorLight} mb-1`}>
-                    <CountUp end={item.value} duration={2} separator="," decimals={0} /> {item.unit}
-                  </div>
-
-                  {/* 黄金换算的特殊处理 */}
-                  {item.id === 'gold' && item.value2 && (
-                    <>
-                      <div className={`text-sm ${item.textColor} mb-1`}>
-                        {item.description}
-                      </div>
-                      <div className={`text-lg font-bold ${item.textColorLight} mb-1`}>
-                        <CountUp end={item.value2} duration={2} separator="," /> {item.unit2}
-                      </div>
-                      <div className={`text-sm ${item.textColor} mb-2`}>
-                        {item.description2}
-                      </div>
-                    </>
-                  )}
-
-                  {/* 其他项目的描述 */}
-                  {item.id !== 'gold' && (
-                    <>
-                      <div className={`text-sm ${item.textColor} mb-1`}>
-                        {item.description}
-                      </div>
-                      {item.description2 && (
-                        <div className={`text-sm ${item.textColor} mb-2`}>
-                          {item.description2}
-                        </div>
-                      )}
-                    </>
-                  )}
-
-                  <div className={`text-xs ${item.textColorNote}`}>
-                    {item.note}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </CardContent>
     </Card>
   )

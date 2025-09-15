@@ -7,13 +7,13 @@ import { Suspense } from "react"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "中本聪模拟器 - 比特币创始人资产模拟器",
-  description: "实时计算中本聪的比特币财富，换算成各种物品数量和历史时间线。幽默魔性，传播必备！",
+  title: "5KBTC模拟器 - 比特币投资时间机器",
+  description: "用5千人民币在不同年份买入比特币，现在价值多少？穿越时空的投资模拟器！",
   generator: "v0.app",
-  keywords: ["中本聪", "比特币", "财富计算器", "BTC", "资产模拟器"],
+  keywords: ["5KBTC", "比特币", "投资模拟器", "BTC", "时间机器", "收益率计算"],
   openGraph: {
-    title: "中本聪财富模拟器",
-    description: "看看比特币创始人的惊人财富能买多少东西！",
+    title: "5KBTC时间机器",
+    description: "穿越时空看看5千人民币在不同年份买入比特币的惊人收益！",
     type: "website",
   },
   icons: {
@@ -21,8 +21,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "中本聪财富模拟器",
-    description: "实时计算中本聪的BTC财富，魔性对比各种物品！",
+    title: "5KBTC投资时间机器",
+    description: "5千人民币穿越时空买BTC，现在值多少钱？魔性投资模拟器！",
   },
 }
 
