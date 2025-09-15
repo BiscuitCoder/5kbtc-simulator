@@ -32,7 +32,7 @@ export default function ShoppingCartSection({ comparisonItems, remainingAssets }
     <div className="mb-8">
       <h2 className="text-3xl font-bold text-center mb-4 text-yellow-600">🛒 请理性消费！</h2>
       <p className="text-center text-muted-foreground mb-8">
-        选择商品数量，实时计算价格！
+        您现在已有约 <span className="font-semibold text-green-600">${remainingAssets.toLocaleString()}</span> 的预算了！
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {useMemo(() => {
