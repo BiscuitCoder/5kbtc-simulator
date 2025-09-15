@@ -1,4 +1,4 @@
-# Satoshi Nakamoto simulator
+# 6kbtc-regret
 
 *Automatically synced with your [v0.app](https://v0.app) deployments*
 
